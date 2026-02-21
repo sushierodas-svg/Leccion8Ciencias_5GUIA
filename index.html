@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ciencias Naturales 5° – Lección 8: Reproducción Humana</title>
+<style>
+  :root {
+    --naranja: #db6015;
+    --amarillo: #f7be00;
+    --azul-oscuro: #244b5a;
+    --rojo: #993921;
+    --azul-claro: #f0f8ff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #dce8ed; }
+
+  .deck { width: 100%; height: 100%; max-width: 860px; margin: 0 auto; background: white; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+  .slides-wrap { flex: 1; position: relative; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; overflow: hidden; }
+  .slide.active { display: flex; }
+  .slide-body { flex: 1; overflow-y: auto; padding: 22px 34px; -webkit-overflow-scrolling: touch; }
+
+  .nav-bar { flex-shrink: 0; display: flex; align-items: center; justify-content: center; gap: 14px; background: white; border-top: 2px solid #e0eef4; padding: 10px 20px; }
+  .nav-btn { width: 46px; height: 46px; border-radius: 50%; border: none; cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: transform 0.18s, opacity 0.18s; box-shadow: 0 3px 10px rgba(0,0,0,0.14); flex-shrink: 0; }
+  .nav-btn:hover:not(:disabled) { transform: scale(1.12); }
+  .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+  .nav-prev { background: var(--azul-oscuro); color: white; }
+  .nav-next { background: var(--naranja); color: white; }
+  .progress-track { flex: 1; max-width: 280px; height: 6px; background: #e4eff5; border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--naranja), var(--amarillo)); border-radius: 3px; transition: width 0.35s ease; width: 0%; }
+  .slide-counter { font-size: 12px; font-weight: 800; color: var(--azul-oscuro); min-width: 50px; text-align: center; }
+
+  /* PORTADA */
+  .slide-portada { background: linear-gradient(150deg, var(--azul-oscuro) 0%, #1a3a47 55%, #0f2733 100%); align-items: center; justify-content: center; text-align: center; padding: 36px; overflow: hidden; }
+  .portada-badge { background: var(--amarillo); color: var(--azul-oscuro); font-size: 10px; font-weight: 900; letter-spacing: 2.5px; text-transform: uppercase; padding: 6px 20px; border-radius: 20px; margin-bottom: 20px; display: inline-block; }
+  .portada-icon { font-size: 80px; margin-bottom: 16px; display: block; }
+  .portada-title { font-size: 38px; font-weight: 900; color: white; line-height: 1.1; margin-bottom: 10px; }
+  .portada-sub { font-size: 15px; color: rgba(255,255,255,0.65); margin-bottom: 24px; }
+  .portada-msg { background: rgba(247,190,0,0.14); border: 1.5px solid rgba(247,190,0,0.4); border-radius: 14px; padding: 14px 26px; color: var(--amarillo); font-size: 14px; font-weight: 600; margin-bottom: 20px; max-width: 440px; line-height: 1.5; }
+  .portada-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .tag { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.82); padding: 6px 16px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+  /* HEADER */
+  .slide-header { background: linear-gradient(90deg, var(--azul-oscuro), #1d3d4b); color: white; padding: 15px 34px; display: flex; align-items: center; gap: 14px; flex-shrink: 0; }
+  .header-icon { font-size: 30px; flex-shrink: 0; }
+  .section-label { font-size: 9px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; color: var(--amarillo); display: block; margin-bottom: 2px; }
+  .slide-header h2 { font-size: 19px; font-weight: 800; color: white; line-height: 1.2; }
+
+  .info-banner { background: linear-gradient(90deg, rgba(219,96,21,0.08), rgba(247,190,0,0.08)); border-left: 4px solid var(--naranja); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: var(--azul-oscuro); font-weight: 600; margin-top: 12px; line-height: 1.5; }
+
+  /* OBJETIVOS */
+  .objetivo-card { display: flex; align-items: flex-start; gap: 12px; background: var(--azul-claro); border-left: 4px solid var(--naranja); border-radius: 12px; padding: 13px 16px; margin-bottom: 11px; }
+  .obj-num { background: var(--naranja); color: white; font-size: 14px; font-weight: 900; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .obj-text { font-size: 14px; color: var(--azul-oscuro); font-weight: 500; line-height: 1.55; padding-top: 5px; }
+
+  /* PREV */
+  .prev-question { background: white; border: 2px solid #e4eff5; border-radius: 12px; padding: 14px 18px; margin-bottom: 12px; }
+  .prev-q-text { font-size: 13px; font-weight: 700; color: var(--azul-oscuro); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+  .prev-options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .prev-opt { padding: 7px 16px; border-radius: 20px; border: 2px solid var(--azul-oscuro); background: white; color: var(--azul-oscuro); font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.18s; font-family: inherit; }
+  .prev-opt:hover { background: var(--azul-oscuro); color: white; }
+  .prev-opt.sel-si  { background: #27ae60; border-color: #27ae60; color: white; }
+  .prev-opt.sel-tal { background: var(--naranja); border-color: var(--naranja); color: white; }
+  .prev-opt.sel-no  { background: var(--rojo); border-color: var(--rojo); color: white; }
+  .prev-fb { display: none; margin-top: 8px; font-size: 12px; color: var(--azul-oscuro); font-style: italic; padding: 7px 12px; background: rgba(247,190,0,0.14); border-radius: 8px; border-left: 3px solid var(--amarillo); }
+  .prev-fb.show { display: block; }
+
+  /* VOCAB */
+  .vocab-card { background: white; border: 2px solid #e4eff5; border-radius: 14px; padding: 16px; margin-bottom: 12px; display: flex; align-items: flex-start; gap: 12px; box-shadow: 0 2px 7px rgba(36,75,90,0.06); }
+  .vocab-icon { font-size: 32px; flex-shrink: 0; }
+  .vocab-term { font-size: 16px; font-weight: 900; color: var(--naranja); margin-bottom: 4px; }
+  .vocab-def { font-size: 13px; color: #444; line-height: 1.6; }
+
+  /* CONTENT */
+  .content-sec { background: white; border: 2px solid #e4eff5; border-radius: 14px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(36,75,90,0.04); }
+  .content-sec h3 { color: var(--azul-oscuro); font-size: 14px; font-weight: 800; margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+  .content-sec p { font-size: 13px; color: #333; line-height: 1.7; }
+  .content-sec ul { list-style: none; margin-top: 7px; }
+  .content-sec li { font-size: 13px; color: #333; padding: 4px 0; display: flex; gap: 8px; align-items: flex-start; }
+  .content-sec li::before { content: "▶"; color: var(--naranja); font-size: 9px; padding-top: 4px; flex-shrink: 0; }
+
+  /* PUBERTAD */
+  .pub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .pub-card { border-radius: 14px; padding: 14px; }
+  .pub-card.blue { background: linear-gradient(135deg,#e8f4f8,#d0e8f2); border: 2px solid #a8d4e6; }
+  .pub-card.pink { background: linear-gradient(135deg,#fdf0ec,#fbd8cc); border: 2px solid #f5a88a; }
+  .pub-title { font-size: 13px; font-weight: 800; margin-bottom: 9px; display: flex; align-items: center; gap: 6px; }
+  .pub-card.blue .pub-title { color: var(--azul-oscuro); }
+  .pub-card.pink .pub-title { color: var(--rojo); }
+  .pub-card ul { list-style: none; }
+  .pub-card li { font-size: 12px; color: #333; padding: 3px 0; display: flex; gap: 6px; }
+  .pub-card li::before { content: "•"; color: var(--naranja); font-weight: 900; flex-shrink: 0; }
+
+  /* TIMELINE */
+  .tap-hint { font-size: 11px; color: rgba(36,75,90,0.45); text-align: right; margin-bottom: 10px; }
+  .timeline { position: relative; padding-left: 24px; }
+  .timeline::before { content:""; position:absolute; left:10px; top:8px; bottom:8px; width:3px; background:linear-gradient(to bottom,var(--naranja),var(--amarillo)); border-radius:2px; }
+  .tl-item { position:relative; margin-bottom:10px; background:white; border-radius:12px; padding:11px 13px; border:2px solid #e4eff5; cursor:pointer; transition:border-color 0.2s; box-shadow:0 2px 5px rgba(36,75,90,0.05); }
+  .tl-item:hover { border-color:var(--naranja); }
+  .tl-item::before { content:""; position:absolute; left:-16px; top:50%; transform:translateY(-50%); width:11px; height:11px; border-radius:50%; background:var(--naranja); border:2px solid white; box-shadow:0 0 0 2px var(--naranja); }
+  .tl-head { display:flex; align-items:center; gap:8px; }
+  .tl-week { background:var(--naranja); color:white; font-size:10px; font-weight:800; padding:2px 9px; border-radius:12px; white-space:nowrap; }
+  .tl-label { font-size:13px; font-weight:700; color:var(--azul-oscuro); }
+  .tl-detail { display:none; margin-top:8px; font-size:12px; color:#444; line-height:1.6; padding-top:8px; border-top:1px dashed #ddd; }
+  .tl-detail.show { display:block; }
+
+  /* ACTIVIDADES */
+  .act-intro { background:linear-gradient(90deg,var(--naranja),var(--rojo)); color:white; border-radius:12px; padding:11px 16px; margin-bottom:14px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:10px; }
+  .act-intro span { font-size:22px; }
+  .q-card { background:white; border:2px solid #e4eff5; border-radius:14px; padding:16px; margin-bottom:12px; }
+  .q-text { font-size:13px; font-weight:700; color:var(--azul-oscuro); margin-bottom:11px; line-height:1.45; }
+  .opts-list { display:flex; flex-direction:column; gap:7px; }
+  .opt-btn { padding:10px 14px; border-radius:10px; border:2px solid #e0eef4; background:#f8fbfd; color:var(--azul-oscuro); font-size:13px; font-weight:500; cursor:pointer; text-align:left; transition:all 0.18s; font-family:inherit; }
+  .opt-btn:hover:not(:disabled) { border-color:var(--naranja); background:rgba(219,96,21,0.05); }
+  .opt-btn.correct  { background:#d4edda; border-color:#28a745; color:#155724; font-weight:700; }
+  .opt-btn.incorrect{ background:#f8d7da; border-color:#dc3545; color:#721c24; }
+  .fb-box { margin-top:10px; padding:10px 14px; border-radius:10px; font-size:12px; font-weight:600; line-height:1.5; display:none; }
+  .fb-box.ok  { background:#d4edda; border-left:4px solid #28a745; color:#155724; display:block; }
+  .fb-box.err { background:#fff3cd; border-left:4px solid var(--amarillo); color:#856404; display:block; }
+  .retry-btn { margin-top:6px; padding:5px 14px; background:var(--naranja); color:white; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; }
+  .retry-btn:hover { background:var(--rojo); }
+
+  /* JUEGO */
+  .game-intro { background:linear-gradient(135deg,var(--azul-oscuro),#1a3a47); color:white; border-radius:14px; padding:13px 16px; margin-bottom:14px; text-align:center; }
+  .game-intro h3 { font-size:16px; font-weight:800; margin-bottom:3px; }
+  .game-intro p { font-size:12px; color:rgba(255,255,255,0.72); }
+  .steps-wrap { display:flex; flex-direction:column; gap:7px; }
+  .step-btn { padding:11px 14px; border-radius:12px; border:2px solid #e0eef4; background:white; color:var(--azul-oscuro); font-size:13px; font-weight:600; cursor:pointer; text-align:left; font-family:inherit; transition:all 0.22s; display:flex; align-items:center; gap:10px; }
+  .step-num { width:27px; height:27px; border-radius:50%; background:#e8f4f8; font-size:12px; font-weight:900; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.18s; }
+  .step-btn:hover:not(:disabled) { border-color:var(--naranja); }
+  .step-btn:hover:not(:disabled) .step-num { background:var(--naranja); color:white; }
+  .step-btn.cs { background:#d4edda; border-color:#28a745; color:#155724; }
+  .step-btn.cs .step-num { background:#28a745; color:white; }
+  .step-btn.is { background:#f8d7da; border-color:#dc3545; }
+  .game-fb { margin-top:11px; padding:11px 15px; border-radius:12px; font-size:13px; font-weight:600; line-height:1.5; display:none; }
+  .game-fb.show { display:block; }
+  .game-fb.ok   { background:#d4edda; border-left:4px solid #28a745; color:#155724; }
+  .game-fb.hint { background:#fff3cd; border-left:4px solid var(--amarillo); color:#856404; }
+  .game-rst { margin-top:8px; padding:6px 16px; background:var(--azul-oscuro); color:white; border:none; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer; font-family:inherit; display:none; }
+  .game-rst:hover { background:var(--naranja); }
+  .game-rst.show { display:inline-flex; }
+
+  /* APLICACIÓN */
+  .scenario { background:linear-gradient(135deg,#e8f4f8,#daf0e6); border-radius:14px; padding:16px; margin-bottom:14px; border:2px solid #a8d4e6; }
+  .scenario-lbl { font-size:10px; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; color:var(--azul-oscuro); margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+  .scenario p { font-size:13px; color:#333; line-height:1.6; }
+  .reflect-list { display:flex; flex-direction:column; gap:8px; }
+  .rfl-btn { padding:11px 14px; border-radius:12px; border:2px solid #e0eef4; background:white; color:var(--azul-oscuro); font-size:13px; font-weight:600; cursor:pointer; text-align:left; font-family:inherit; transition:all 0.22s; display:flex; align-items:flex-start; gap:10px; }
+  .opt-ltr { width:25px; height:25px; border-radius:50%; background:#e8f4f8; font-weight:900; font-size:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.18s; }
+  .rfl-btn:hover:not(:disabled) { border-color:var(--naranja); }
+  .rfl-btn:hover:not(:disabled) .opt-ltr { background:var(--naranja); color:white; }
+  .rfl-btn.best { background:#d4edda; border-color:#28a745; color:#155724; }
+  .rfl-btn.best .opt-ltr { background:#28a745; color:white; }
+
+  /* REPASO */
+  .repaso-header { background:linear-gradient(90deg,var(--rojo),#7a2d18); color:white; border-radius:12px; padding:11px 16px; margin-bottom:14px; text-align:center; font-size:13px; font-weight:700; }
+  .repaso-score { font-size:22px; font-weight:900; display:block; margin-top:3px; color:var(--amarillo); }
+  .rp-card { background:white; border:2px solid #e4eff5; border-radius:12px; padding:13px 15px; margin-bottom:9px; }
+  .rp-q { font-size:13px; font-weight:700; color:var(--azul-oscuro); margin-bottom:9px; }
+  .rp-opts { display:flex; gap:7px; flex-wrap:wrap; }
+  .rp-opt { padding:7px 13px; border-radius:20px; border:2px solid #e0eef4; background:#f8fbfd; color:var(--azul-oscuro); font-size:12px; font-weight:600; cursor:pointer; font-family:inherit; transition:all 0.18s; }
+  .rp-opt:hover:not(:disabled) { border-color:var(--naranja); background:rgba(219,96,21,0.05); }
+  .rp-opt.rc { background:#d4edda; border-color:#28a745; color:#155724; }
+  .rp-opt.ri { background:#f8d7da; border-color:#dc3545; color:#721c24; }
+  .rp-fb { margin-top:6px; font-size:11px; font-weight:600; padding:5px 10px; border-radius:8px; display:none; line-height:1.4; }
+  .rp-fb.show { display:block; }
+  .rp-fb.ok { background:#d4edda; color:#155724; }
+  .rp-fb.no { background:#fff3cd; color:#856404; }
+  .rp-rt { padding:4px 12px; background:var(--naranja); color:white; border:none; border-radius:20px; font-size:11px; font-weight:700; cursor:pointer; font-family:inherit; margin-top:4px; display:none; }
+  .rp-rt.show { display:inline-block; }
+
+  /* META */
+  .meta-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .meta-card { background:white; border-radius:14px; padding:16px; border:2px solid #e4eff5; text-align:center; cursor:pointer; transition:all 0.22s; box-shadow:0 2px 7px rgba(36,75,90,0.06); }
+  .meta-card:hover { border-color:var(--naranja); transform:translateY(-2px); }
+  .meta-card.sel { background:linear-gradient(135deg,rgba(219,96,21,0.07),rgba(247,190,0,0.07)); border-color:var(--naranja); }
+  .meta-emoji { font-size:30px; margin-bottom:7px; }
+  .meta-lbl { font-size:12px; font-weight:800; color:var(--azul-oscuro); margin-bottom:4px; }
+  .meta-q { font-size:11px; color:#666; line-height:1.4; }
+  .meta-conf { margin-top:14px; background:#e8f4f8; border-radius:12px; padding:11px; font-size:13px; color:var(--azul-oscuro); font-weight:600; text-align:center; display:none; border-left:4px solid var(--naranja); }
+  .meta-conf.show { display:block; }
+
+  /* CIERRE */
+  .slide-cierre { background:linear-gradient(150deg,#244b5a 0%,#1a3a47 50%,#0f2733 100%); align-items:center; justify-content:center; text-align:center; padding:36px; }
+  .trophy { font-size:84px; margin-bottom:14px; animation:bounce 1.8s ease-in-out infinite; }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-13px)} }
+  .cierre-title { font-size:34px; font-weight:900; color:white; margin-bottom:8px; }
+  .cierre-sub { font-size:14px; color:var(--amarillo); margin-bottom:22px; font-weight:600; }
+  .badges { display:flex; gap:9px; justify-content:center; flex-wrap:wrap; margin-bottom:20px; }
+  .bdg { background:rgba(247,190,0,0.14); border:2px solid rgba(247,190,0,0.4); border-radius:50px; padding:6px 14px; color:var(--amarillo); font-size:12px; font-weight:700; display:flex; align-items:center; gap:5px; }
+  .cierre-msg { background:rgba(255,255,255,0.07); border-radius:14px; padding:16px 22px; color:rgba(255,255,255,0.84); font-size:14px; line-height:1.7; max-width:460px; border:1px solid rgba(255,255,255,0.1); }
+
+  @media(max-width:560px){
+    .pub-grid,.meta-grid{ grid-template-columns:1fr; }
+    .portada-title{ font-size:28px; }
+    .slide-body{ padding:16px 16px; }
+    .slide-header{ padding:13px 16px; }
+    .cierre-title{ font-size:24px; }
+  }
+</style>
+</head>
+<body>
+<div class="deck">
+  <div class="slides-wrap">
+
+    <!-- SLIDE 1 PORTADA -->
+    <div class="slide slide-portada active" id="slide-1">
+      <div class="portada-badge">Ciencias Naturales · Lección 8</div>
+      <span class="portada-icon">🧬</span>
+      <div class="portada-title">Reproducción<br>Humana</div>
+      <div class="portada-sub">Descubramos juntos el origen de la vida</div>
+      <div class="portada-msg">✨ Hoy aprenderás algo extraordinario:<br><strong>cómo comienza la vida humana</strong></div>
+      <div class="portada-tags">
+        <span class="tag">🎓 5° Primaria</span>
+        <span class="tag">🔬 Ciencias Naturales</span>
+        <span class="tag">📚 15 diapositivas</span>
+      </div>
+    </div>
+
+    <!-- SLIDE 2 OBJETIVOS -->
+    <div class="slide" id="slide-2">
+      <div class="slide-header"><div class="header-icon">🎯</div><div><span class="section-label">Lo que aprenderás hoy</span><h2>Objetivos de Aprendizaje</h2></div></div>
+      <div class="slide-body">
+        <div class="objetivo-card"><div class="obj-num">1</div><div class="obj-text">Comprender qué es la <strong>reproducción humana</strong> y por qué es esencial para la continuación de la especie.</div></div>
+        <div class="objetivo-card"><div class="obj-num">2</div><div class="obj-text">Identificar los <strong>cambios que ocurren en la pubertad</strong> y cómo el cuerpo se prepara para la reproducción.</div></div>
+        <div class="objetivo-card"><div class="obj-num">3</div><div class="obj-text">Describir las <strong>etapas del desarrollo prenatal</strong>, desde la fecundación hasta el nacimiento.</div></div>
+        <div class="info-banner">💡 La reproducción es un proceso <strong>biológico, natural y científico</strong> del cuerpo humano.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 3 CONOCIMIENTOS PREVIOS -->
+    <div class="slide" id="slide-3">
+      <div class="slide-header"><div class="header-icon">💭</div><div><span class="section-label">Activación de conocimientos</span><h2>¿Qué sé sobre el tema?</h2></div></div>
+      <div class="slide-body">
+        <p style="font-size:13px;color:#666;margin-bottom:14px;">Responde cada pregunta. ¡No hay respuestas malas, es solo para saber dónde estás!</p>
+        <div class="prev-question">
+          <div class="prev-q-text"><span>🤔</span>¿Sabes qué significa la palabra "reproducción"?</div>
+          <div class="prev-options">
+            <button class="prev-opt" onclick="selPrev(this,'sel-si','pf1')">Sí lo sé</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-tal','pf1')">Más o menos</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-no','pf1')">No lo sé</button>
+          </div>
+          <div class="prev-fb" id="pf1">¡Perfecto! En esta lección lo vas a descubrir o reafirmar con todo detalle. 🌟</div>
+        </div>
+        <div class="prev-question">
+          <div class="prev-q-text"><span>🌱</span>¿Has escuchado hablar sobre la pubertad?</div>
+          <div class="prev-options">
+            <button class="prev-opt" onclick="selPrev(this,'sel-si','pf2')">Sí</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-tal','pf2')">Algo</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-no','pf2')">No</button>
+          </div>
+          <div class="prev-fb" id="pf2">La pubertad es una etapa fascinante. ¡Aprenderás exactamente qué cambios trae! 💪</div>
+        </div>
+        <div class="prev-question">
+          <div class="prev-q-text"><span>👶</span>¿Sabes cuánto tiempo tarda un bebé en formarse dentro del vientre?</div>
+          <div class="prev-options">
+            <button class="prev-opt" onclick="selPrev(this,'sel-si','pf3')">Sí</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-tal','pf3')">Creo que sí</button>
+            <button class="prev-opt" onclick="selPrev(this,'sel-no','pf3')">No sé</button>
+          </div>
+          <div class="prev-fb" id="pf3">¡Un bebé tarda aproximadamente <strong>9 meses</strong> (40 semanas) en desarrollarse. ¡Increíble! 🤩</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 4 VOCABULARIO -->
+    <div class="slide" id="slide-4">
+      <div class="slide-header"><div class="header-icon">📖</div><div><span class="section-label">Vocabulario esencial</span><h2>Palabras Clave</h2></div></div>
+      <div class="slide-body">
+        <div class="vocab-card"><div class="vocab-icon">🔁</div><div><div class="vocab-term">Reproducción</div><div class="vocab-def">Proceso biológico mediante el cual los seres vivos crean nuevos individuos de su misma especie para asegurar su continuidad a lo largo del tiempo.</div></div></div>
+        <div class="vocab-card"><div class="vocab-icon">🌱</div><div><div class="vocab-term">Pubertad</div><div class="vocab-def">Etapa del desarrollo humano en que el cuerpo experimenta cambios físicos y hormonales que señalan el inicio de la madurez sexual. Ocurre entre los 8 y 16 años aproximadamente.</div></div></div>
+        <div class="vocab-card"><div class="vocab-icon">🥚</div><div><div class="vocab-term">Fecundación</div><div class="vocab-def">Unión del óvulo (célula sexual femenina) con el espermatozoide (célula sexual masculina) para formar una nueva célula llamada <strong>cigoto</strong>, inicio del desarrollo de un nuevo ser humano.</div></div></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 5 CONTENIDO 1 -->
+    <div class="slide" id="slide-5">
+      <div class="slide-header"><div class="header-icon">🔬</div><div><span class="section-label">Contenido · Parte 1</span><h2>¿Qué es la Reproducción Humana?</h2></div></div>
+      <div class="slide-body">
+        <div class="content-sec"><h3>🌍 Una función vital</h3><p>La reproducción es una de las funciones más importantes de los seres vivos. Gracias a ella, las especies pueden continuar existiendo a través del tiempo. Sin reproducción, la humanidad no podría continuar.</p></div>
+        <div class="content-sec"><h3>❤️ Reproducción sexual</h3><p>Los seres humanos nos reproducimos de forma <strong>sexual</strong>. Se necesitan dos células especiales: el <strong>óvulo</strong> y el <strong>espermatozoide</strong>. Cuando estas dos células se unen, comienza el desarrollo de un nuevo ser humano.</p></div>
+        <div class="content-sec"><h3>🔬 Las células reproductoras</h3><ul><li>El <strong>óvulo</strong> es la célula sexual femenina. Se forma en los <em>ovarios</em>.</li><li>El <strong>espermatozoide</strong> es la célula sexual masculina. Se forma en los <em>testículos</em>.</li><li>Son las células más especializadas del cuerpo humano.</li></ul></div>
+        <div class="info-banner">🔑 La reproducción humana es un proceso <strong>natural, científico y digno de respeto</strong>.</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 6 PUBERTAD -->
+    <div class="slide" id="slide-6">
+      <div class="slide-header"><div class="header-icon">🌱</div><div><span class="section-label">Contenido · Parte 2</span><h2>La Pubertad</h2></div></div>
+      <div class="slide-body">
+        <div class="content-sec" style="margin-bottom:12px;"><h3>⏰ ¿Cuándo ocurre?</h3><p>La pubertad es la etapa en que el cuerpo se transforma para alcanzar la madurez reproductiva. Ocurre entre los <strong>8 y 16 años</strong>. Cada persona tiene su propio ritmo y eso es completamente normal.</p></div>
+        <div class="pub-grid">
+          <div class="pub-card blue"><div class="pub-title">💙 En el hombre</div><ul><li>Crecimiento de estatura</li><li>Cambio de voz (más grave)</li><li>Aparición de vello corporal</li><li>Desarrollo muscular</li><li>Producción de espermatozoides</li></ul></div>
+          <div class="pub-card pink"><div class="pub-title">❤️ En la mujer</div><ul><li>Ensanchamiento de caderas</li><li>Desarrollo de los senos</li><li>Aparición de vello corporal</li><li>Inicio de la menstruación</li><li>Maduración de óvulos</li></ul></div>
+        </div>
+        <div class="info-banner" style="margin-top:12px;">💡 Todos estos cambios son <strong>normales y necesarios</strong>. ¡Son señales de que tu cuerpo crece con salud!</div>
+      </div>
+    </div>
+
+    <!-- SLIDE 7 FECUNDACIÓN -->
+    <div class="slide" id="slide-7">
+      <div class="slide-header"><div class="header-icon">🥚</div><div><span class="section-label">Contenido · Parte 3</span><h2>La Fecundación</h2></div></div>
+      <div class="slide-body">
+        <div class="content-sec"><h3>✨ El comienzo de la vida</h3><p>La fecundación ocurre cuando un espermatozoide logra unirse con el óvulo. Este proceso tiene lugar en las <strong>trompas de Falopio</strong>, dentro del cuerpo de la mujer.</p></div>
+        <div class="content-sec"><h3>🔬 El cigoto: la primera célula</h3><p>Cuando el óvulo y el espermatozoide se unen, forman una sola célula llamada <strong>cigoto</strong>. Contiene toda la información genética para formar un ser humano completo. Es el inicio de la vida.</p></div>
+        <div class="content-sec"><h3>📋 ¿Cómo ocurre paso a paso?</h3><ul><li>El óvulo maduro es liberado por el ovario (<em>ovulación</em>).</li><li>El espermatozoide viaja hasta encontrar al óvulo.</li><li>Un solo espermatozoide penetra al óvulo y lo fecunda.</li><li>Se forma el cigoto con <strong>46 cromosomas</strong> (23 de cada progenitor).</li><li>El cigoto comienza a dividirse y migra hacia el útero.</li></ul></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 8 EMBARAZO -->
+    <div class="slide" id="slide-8">
+      <div class="slide-header"><div class="header-icon">🤰</div><div><span class="section-label">Contenido · Parte 4</span><h2>El Embarazo y el Nacimiento</h2></div></div>
+      <div class="slide-body">
+        <div class="content-sec"><h3>🏠 El útero: hogar del bebé</h3><p>Después de la fecundación, el embrión viaja hacia el <strong>útero</strong> y se implanta en su pared. Ahí crecerá durante aproximadamente <strong>9 meses (40 semanas)</strong>.</p></div>
+        <div class="content-sec"><h3>🌊 La placenta y el cordón umbilical</h3><p>Se forma la <strong>placenta</strong>, que conecta a la madre con el bebé a través del <strong>cordón umbilical</strong>. Por ahí pasan los nutrientes y el oxígeno que el bebé necesita para crecer.</p></div>
+        <div class="content-sec"><h3>👶 El nacimiento</h3><p>Al completarse el desarrollo, el bebé nace a través del <strong>parto</strong>. Llega al mundo con todos sus sistemas funcionando, listo para respirar, alimentarse y crecer.</p></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 9 EXPLORACIÓN VISUAL -->
+    <div class="slide" id="slide-9">
+      <div class="slide-header"><div class="header-icon">🔍</div><div><span class="section-label">Exploración interactiva</span><h2>Etapas del Desarrollo Prenatal</h2></div></div>
+      <div class="slide-body">
+        <div class="tap-hint">👆 Toca cada etapa para ver más información</div>
+        <div class="timeline">
+          <div class="tl-item" onclick="tlToggle(this)"><div class="tl-head"><span class="tl-week">Semanas 1–4</span><span class="tl-label">🌱 Cigoto y embrión temprano</span></div><div class="tl-detail">El cigoto se divide en muchas células. Se implanta en el útero entre los días 6 y 10. Al final de la semana 4, el embrión mide unos 2 mm y el corazón comienza a formarse.</div></div>
+          <div class="tl-item" onclick="tlToggle(this)"><div class="tl-head"><span class="tl-week">Semanas 5–8</span><span class="tl-label">🫀 Desarrollo de órganos</span></div><div class="tl-detail">Se forman el cerebro, la columna vertebral, los ojos y los oídos. El corazón ya late. Los brazos y piernas aparecen como pequeños brotes. El embrión mide alrededor de 1.5 cm.</div></div>
+          <div class="tl-item" onclick="tlToggle(this)"><div class="tl-head"><span class="tl-week">Semanas 9–12</span><span class="tl-label">🧠 Feto en formación</span></div><div class="tl-detail">A partir de la semana 9 se llama <strong>feto</strong>. Tiene dedos, uñas y rasgos faciales definidos. Puede moverse aunque la madre aún no lo siente. Mide unos 7 cm.</div></div>
+          <div class="tl-item" onclick="tlToggle(this)"><div class="tl-head"><span class="tl-week">Semanas 13–28</span><span class="tl-label">💪 Crecimiento activo</span></div><div class="tl-detail">La madre comienza a sentir los movimientos del bebé. Se desarrollan los pulmones, el esqueleto y la audición. El bebé puede escuchar sonidos. Mide entre 25 y 35 cm.</div></div>
+          <div class="tl-item" onclick="tlToggle(this)"><div class="tl-head"><span class="tl-week">Semanas 29–40</span><span class="tl-label">👶 Preparación para nacer</span></div><div class="tl-detail">El bebé termina de madurar todos sus órganos. El cerebro se desarrolla intensamente. Al nacer, pesa aproximadamente 3 kg y mide unos 50 cm.</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 10 ACTIVIDAD -->
+    <div class="slide" id="slide-10">
+      <div class="slide-header"><div class="header-icon">✏️</div><div><span class="section-label">Actividad de comprensión</span><h2>Selección Múltiple</h2></div></div>
+      <div class="slide-body">
+        <div class="act-intro"><span>🧩</span><div>Elige la respuesta correcta. Si te equivocas, ¡puedes intentarlo nuevamente!</div></div>
+        <div class="q-card">
+          <div class="q-text">1. ¿Cómo se llama la célula que se forma cuando el óvulo y el espermatozoide se unen?</div>
+          <div class="opts-list" id="a1">
+            <button class="opt-btn" onclick="chkA(this,'a1',false)">Embrión</button>
+            <button class="opt-btn" onclick="chkA(this,'a1',true)">Cigoto</button>
+            <button class="opt-btn" onclick="chkA(this,'a1',false)">Feto</button>
+            <button class="opt-btn" onclick="chkA(this,'a1',false)">Neurona</button>
+          </div>
+          <div class="fb-box" id="a1-fb"></div>
+        </div>
+        <div class="q-card">
+          <div class="q-text">2. ¿En qué parte del cuerpo de la mujer crece el bebé durante el embarazo?</div>
+          <div class="opts-list" id="a2">
+            <button class="opt-btn" onclick="chkA(this,'a2',false)">En los ovarios</button>
+            <button class="opt-btn" onclick="chkA(this,'a2',false)">En el estómago</button>
+            <button class="opt-btn" onclick="chkA(this,'a2',true)">En el útero</button>
+            <button class="opt-btn" onclick="chkA(this,'a2',false)">En los riñones</button>
+          </div>
+          <div class="fb-box" id="a2-fb"></div>
+        </div>
+        <div class="q-card">
+          <div class="q-text">3. ¿Cuántos cromosomas tiene el cigoto humano?</div>
+          <div class="opts-list" id="a3">
+            <button class="opt-btn" onclick="chkA(this,'a3',false)">23 cromosomas</button>
+            <button class="opt-btn" onclick="chkA(this,'a3',true)">46 cromosomas</button>
+            <button class="opt-btn" onclick="chkA(this,'a3',false)">12 cromosomas</button>
+            <button class="opt-btn" onclick="chkA(this,'a3',false)">92 cromosomas</button>
+          </div>
+          <div class="fb-box" id="a3-fb"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 11 JUEGO -->
+    <div class="slide" id="slide-11">
+      <div class="slide-header"><div class="header-icon">🎮</div><div><span class="section-label">Juego educativo</span><h2>Ordena las Etapas</h2></div></div>
+      <div class="slide-body">
+        <div class="game-intro"><h3>🗂️ ¡Pon en orden!</h3><p>Selecciona los pasos en el orden correcto (del 1 al 5). ¡Toca cada uno!</p></div>
+        <div class="steps-wrap" id="gsteps">
+          <button class="step-btn" onclick="doStep(this,2)"><div class="step-num">?</div><span>🥚 El óvulo es liberado por el ovario (ovulación)</span></button>
+          <button class="step-btn" onclick="doStep(this,4)"><div class="step-num">?</div><span>🌱 El cigoto se implanta en el útero</span></button>
+          <button class="step-btn" onclick="doStep(this,1)"><div class="step-num">?</div><span>🌡️ El cuerpo alcanza la madurez sexual (pubertad)</span></button>
+          <button class="step-btn" onclick="doStep(this,3)"><div class="step-num">?</div><span>🔬 El espermatozoide fecunda el óvulo → se forma el cigoto</span></button>
+          <button class="step-btn" onclick="doStep(this,5)"><div class="step-num">?</div><span>👶 El bebé se desarrolla 9 meses y nace</span></button>
+        </div>
+        <div class="game-fb" id="gfb"></div>
+        <button class="game-rst" id="grst" onclick="rstGame()">🔄 Intentar de nuevo</button>
+      </div>
+    </div>
+
+    <!-- SLIDE 12 APLICACIÓN -->
+    <div class="slide" id="slide-12">
+      <div class="slide-header"><div class="header-icon">🌍</div><div><span class="section-label">Aplicación práctica</span><h2>Situación de la vida real</h2></div></div>
+      <div class="slide-body">
+        <div class="scenario"><div class="scenario-lbl">📖 Situación</div><p>Sofía tiene 11 años y nota que su cuerpo está cambiando: ha crecido varios centímetros y tiene preguntas sobre lo que está pasando. Su mamá le explica que está entrando en la <strong>pubertad</strong>. Sofía quiere entender mejor qué le ocurre.</p></div>
+        <p style="font-size:13px;font-weight:700;color:var(--azul-oscuro);margin-bottom:11px;">¿Cuál es la mejor manera de que Sofía se informe?</p>
+        <div class="reflect-list" id="rfl">
+          <button class="rfl-btn" onclick="doRfl(this,false)"><div class="opt-ltr">A</div><span>Ignorar los cambios porque siente vergüenza de hablar del tema.</span></button>
+          <button class="rfl-btn" onclick="doRfl(this,true)"><div class="opt-ltr">B</div><span>Hablar con su mamá, un médico o un maestro de confianza, y aprender en la escuela sobre biología y salud.</span></button>
+          <button class="rfl-btn" onclick="doRfl(this,false)"><div class="opt-ltr">C</div><span>Creer todo lo que le digan sus amigos sin verificar si es correcto.</span></button>
+        </div>
+        <div class="fb-box" id="rfb"></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 13 REPASO -->
+    <div class="slide" id="slide-13">
+      <div class="slide-header"><div class="header-icon">📝</div><div><span class="section-label">Repaso final</span><h2>Comprueba lo que aprendiste</h2></div></div>
+      <div class="slide-body">
+        <div class="repaso-header">Responde todas las preguntas<span class="repaso-score" id="score">0 / 4 correctas</span></div>
+        <div class="rp-card">
+          <div class="rp-q">1. ¿Qué estructura conecta a la madre con el bebé durante el embarazo?</div>
+          <div class="rp-opts">
+            <button class="rp-opt" onclick="doRp(this,'r1',false,'El estómago es el órgano digestivo, no conecta con el bebé.')">Estómago</button>
+            <button class="rp-opt" onclick="doRp(this,'r1',false,'La placenta protege al bebé, pero el cordón umbilical es el que lo conecta con la madre.')">Placenta sola</button>
+            <button class="rp-opt" onclick="doRp(this,'r1',true,'¡Correcto! El cordón umbilical conecta al bebé con la placenta, transmitiendo nutrientes y oxígeno.')">Cordón umbilical</button>
+            <button class="rp-opt" onclick="doRp(this,'r1',false,'Los ovarios producen óvulos, no conectan con el bebé.')">Ovarios</button>
+          </div>
+          <div class="rp-fb" id="rfb-r1"></div>
+          <button class="rp-rt" id="rrt-r1" onclick="retryRp('r1')">🔄 Intentar de nuevo</button>
+        </div>
+        <div class="rp-card">
+          <div class="rp-q">2. ¿Cuánto tiempo dura aproximadamente el embarazo humano?</div>
+          <div class="rp-opts">
+            <button class="rp-opt" onclick="doRp(this,'r2',false,'3 meses es muy poco. El bebé necesita más tiempo para desarrollarse.')">3 meses</button>
+            <button class="rp-opt" onclick="doRp(this,'r2',false,'6 meses no es suficiente para que el bebé esté listo.')">6 meses</button>
+            <button class="rp-opt" onclick="doRp(this,'r2',true,'¡Exacto! El embarazo dura aproximadamente 9 meses (40 semanas).')">9 meses</button>
+            <button class="rp-opt" onclick="doRp(this,'r2',false,'12 meses sería demasiado. El bebé nace alrededor de los 9 meses.')">12 meses</button>
+          </div>
+          <div class="rp-fb" id="rfb-r2"></div>
+          <button class="rp-rt" id="rrt-r2" onclick="retryRp('r2')">🔄 Intentar de nuevo</button>
+        </div>
+        <div class="rp-card">
+          <div class="rp-q">3. ¿Dónde ocurre la fecundación en el cuerpo humano?</div>
+          <div class="rp-opts">
+            <button class="rp-opt" onclick="doRp(this,'r3',false,'En el útero crece el embrión, pero la fecundación ocurre antes de llegar ahí.')">En el útero</button>
+            <button class="rp-opt" onclick="doRp(this,'r3',true,'¡Correcto! La fecundación ocurre en las trompas de Falopio.')">En las trompas de Falopio</button>
+            <button class="rp-opt" onclick="doRp(this,'r3',false,'Los ovarios producen y liberan óvulos, pero la fecundación no ocurre ahí.')">En los ovarios</button>
+          </div>
+          <div class="rp-fb" id="rfb-r3"></div>
+          <button class="rp-rt" id="rrt-r3" onclick="retryRp('r3')">🔄 Intentar de nuevo</button>
+        </div>
+        <div class="rp-card">
+          <div class="rp-q">4. ¿A partir de qué semana el embrión se llama "feto"?</div>
+          <div class="rp-opts">
+            <button class="rp-opt" onclick="doRp(this,'r4',false,'Desde la fecundación hasta la semana 8 se llama embrión, no feto.')">Desde la fecundación</button>
+            <button class="rp-opt" onclick="doRp(this,'r4',true,'¡Muy bien! A partir de la semana 9 de gestación se llama feto.')">A partir de la semana 9</button>
+            <button class="rp-opt" onclick="doRp(this,'r4',false,'El nacimiento es el final del embarazo. El feto existe desde la semana 9.')">En el nacimiento</button>
+          </div>
+          <div class="rp-fb" id="rfb-r4"></div>
+          <button class="rp-rt" id="rrt-r4" onclick="retryRp('r4')">🔄 Intentar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SLIDE 14 METACOGNICIÓN -->
+    <div class="slide" id="slide-14">
+      <div class="slide-header"><div class="header-icon">🧠</div><div><span class="section-label">Reflexión personal</span><h2>¿Cómo fue mi aprendizaje hoy?</h2></div></div>
+      <div class="slide-body">
+        <p style="font-size:13px;color:#666;margin-bottom:14px;">Selecciona la tarjeta que mejor describe tu experiencia. ¡Sé honesto contigo mismo!</p>
+        <div class="meta-grid">
+          <div class="meta-card" onclick="doMeta(this,'A')"><div class="meta-emoji">🌟</div><div class="meta-lbl">¡Lo entendí todo!</div><div class="meta-q">Comprendí bien el tema y puedo explicárselo a alguien.</div></div>
+          <div class="meta-card" onclick="doMeta(this,'B')"><div class="meta-emoji">😊</div><div class="meta-lbl">Lo entendí en general</div><div class="meta-q">Entendí la mayor parte, pero algo me generó duda.</div></div>
+          <div class="meta-card" onclick="doMeta(this,'C')"><div class="meta-emoji">🤔</div><div class="meta-lbl">Tengo algunas dudas</div><div class="meta-q">Algunos conceptos no me quedaron claros. Necesito repasar.</div></div>
+          <div class="meta-card" onclick="doMeta(this,'D')"><div class="meta-emoji">💪</div><div class="meta-lbl">¡Quiero aprender más!</div><div class="meta-q">Me interesó mucho y quiero profundizar más.</div></div>
+        </div>
+        <div class="meta-conf" id="mconf"></div>
+      </div>
+    </div>
+
+    <!-- SLIDE 15 CIERRE -->
+    <div class="slide slide-cierre" id="slide-15">
+      <div class="trophy">🏆</div>
+      <div class="cierre-title">¡Felicitaciones!</div>
+      <div class="cierre-sub">Completaste la Lección 8: Reproducción Humana</div>
+      <div class="badges">
+        <div class="bdg">🧬 Científico/a de 5°</div>
+        <div class="bdg">🌟 Explorador/a de la vida</div>
+        <div class="bdg">📚 Lección completada</div>
+      </div>
+      <div class="cierre-msg">Hoy diste un gran paso en tu conocimiento científico. Aprendiste que la vida humana es un proceso biológico extraordinario: desde los cambios de la pubertad y la fecundación hasta el nacimiento. ¡Sigue explorando el mundo de la ciencia con curiosidad y respeto! 🌍✨</div>
+    </div>
+
+  </div><!-- /slides-wrap -->
+
+  <!-- NAVEGACIÓN -->
+  <div class="nav-bar">
+    <button class="nav-btn nav-prev" id="prevBtn" onclick="nav(-1)" disabled>&#8592;</button>
+    <div class="progress-track"><div class="progress-fill" id="pFill"></div></div>
+    <span class="slide-counter" id="counter">1 / 15</span>
+    <button class="nav-btn nav-next" id="nextBtn" onclick="nav(1)">&#8594;</button>
+  </div>
+</div>
+
+<script>
+const TOTAL=15; let cur=1;
+function nav(d){
+  const p=cur; cur=Math.max(1,Math.min(TOTAL,cur+d)); if(p===cur)return;
+  document.getElementById('slide-'+p).classList.remove('active');
+  const s=document.getElementById('slide-'+cur); s.classList.add('active');
+  const b=s.querySelector('.slide-body'); if(b) b.scrollTop=0;
+  document.getElementById('prevBtn').disabled=cur===1;
+  document.getElementById('nextBtn').disabled=cur===TOTAL;
+  document.getElementById('pFill').style.width=((cur-1)/(TOTAL-1)*100)+'%';
+  document.getElementById('counter').textContent=cur+' / '+TOTAL;
+}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'||e.key==='ArrowDown')nav(1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')nav(-1);});
+
+function selPrev(btn,cls,id){btn.closest('.prev-options').querySelectorAll('.prev-opt').forEach(b=>b.className='prev-opt');btn.classList.add(cls);document.getElementById(id).classList.add('show');}
+function tlToggle(el){el.querySelector('.tl-detail').classList.toggle('show');}
+
+const aMsg={a1:{ok:'✅ ¡Excelente! El cigoto es la primera célula que se forma al unirse el óvulo y el espermatozoide.',no:'❌ No es correcto. La célula que se forma al unirse el óvulo y el espermatozoide se llama <strong>cigoto</strong>. ¡Inténtalo de nuevo!'},a2:{ok:'✅ ¡Correcto! El bebé crece dentro del útero, un órgano especial del sistema reproductor femenino.',no:'❌ No es correcto. El bebé se desarrolla dentro del <strong>útero</strong>. ¡Inténtalo de nuevo!'},a3:{ok:'✅ ¡Perfecto! El cigoto tiene 46 cromosomas: 23 del óvulo y 23 del espermatozoide.',no:'❌ Esa no es la cantidad correcta. El cigoto tiene <strong>46 cromosomas</strong> (23 de cada progenitor). ¡Inténtalo!'}};
+function chkA(btn,id,ok){const w=document.getElementById(id),fb=document.getElementById(id+'-fb');if(w.querySelector('.correct'))return;if(ok){btn.classList.add('correct');w.querySelectorAll('button').forEach(b=>b.disabled=true);fb.className='fb-box ok';fb.innerHTML=aMsg[id].ok;}else{btn.classList.add('incorrect');btn.disabled=true;fb.className='fb-box err';fb.innerHTML=aMsg[id].no+'<br><button class="retry-btn" onclick="retryA(\''+id+'\')">🔄 Intentar de nuevo</button>';}}
+function retryA(id){document.getElementById(id).querySelectorAll('button').forEach(b=>{b.disabled=false;b.classList.remove('correct','incorrect');});const fb=document.getElementById(id+'-fb');fb.className='fb-box';fb.innerHTML='';}
+
+let gStep=1;
+function doStep(btn,exp){if(btn.disabled)return;const fb=document.getElementById('gfb'),rst=document.getElementById('grst');if(exp===gStep){btn.classList.add('cs');btn.querySelector('.step-num').textContent=gStep;btn.disabled=true;gStep++;if(gStep>5){fb.className='game-fb show ok';fb.innerHTML='🎉 ¡Perfecto! Ordenaste todas las etapas correctamente. ¡Eres un experto!';rst.classList.add('show');}else{fb.className='game-fb show ok';fb.innerHTML='✅ ¡Correcto! Paso '+(gStep-1)+' bien ubicado. Ahora selecciona el paso '+gStep+'.';}}else{btn.classList.add('is');setTimeout(()=>btn.classList.remove('is'),700);fb.className='game-fb show hint';fb.innerHTML='⚠️ Ese no es el paso '+gStep+'. Piensa: ¿cuál ocurre primero? ¡Tú puedes!';}}
+function rstGame(){gStep=1;document.querySelectorAll('.step-btn').forEach(b=>{b.disabled=false;b.classList.remove('cs','is');b.querySelector('.step-num').textContent='?';});document.getElementById('gfb').className='game-fb';document.getElementById('grst').classList.remove('show');}
+
+function doRfl(btn,best){const w=document.getElementById('rfl'),fb=document.getElementById('rfb');if(w.querySelector('.best'))return;if(best){btn.classList.add('best');w.querySelectorAll('.rfl-btn').forEach(b=>b.disabled=true);fb.className='fb-box ok';fb.innerHTML='✅ ¡Muy bien! Informarse con personas de confianza y fuentes científicas como la escuela es siempre la mejor decisión.';}else{btn.style.borderColor='var(--rojo)';setTimeout(()=>btn.style.borderColor='',700);fb.className='fb-box err';fb.innerHTML='💡 Esa no es la mejor opción. Lo más importante es informarse con adultos de confianza. ¡Piénsalo de nuevo!<br><button class="retry-btn" onclick="rstRfl()">🔄 Intentar de nuevo</button>';}}
+function rstRfl(){document.querySelectorAll('.rfl-btn').forEach(b=>{b.disabled=false;b.classList.remove('best');b.style.borderColor='';});const fb=document.getElementById('rfb');fb.className='fb-box';fb.innerHTML='';}
+
+const sc={r1:false,r2:false,r3:false,r4:false};
+function doRp(btn,id,ok,expl){const opts=btn.closest('.rp-opts'),fb=document.getElementById('rfb-'+id),rt=document.getElementById('rrt-'+id);if(opts.querySelector('.rc'))return;if(ok){btn.classList.add('rc');opts.querySelectorAll('button').forEach(b=>b.disabled=true);fb.className='rp-fb show ok';fb.textContent=expl;rt.className='rp-rt';if(!sc[id]){sc[id]=true;updScore();}}else{btn.classList.add('ri');btn.disabled=true;fb.className='rp-fb show no';fb.innerHTML='❌ '+expl;rt.className='rp-rt show';}}
+function retryRp(id){document.getElementById('rrt-'+id).closest('.rp-card').querySelectorAll('.rp-opt').forEach(b=>{b.disabled=false;b.classList.remove('rc','ri');});document.getElementById('rfb-'+id).className='rp-fb';document.getElementById('rrt-'+id).className='rp-rt';}
+function updScore(){document.getElementById('score').textContent=Object.values(sc).filter(Boolean).length+' / 4 correctas';}
+
+const metaT={A:'🌟 ¡Fantástico! Tu comprensión del tema es excelente. ¡Puedes ser un guía para tus compañeros!',B:'😊 ¡Muy bien! Es normal tener alguna duda. Puedes revisar la lección cuantas veces necesites.',C:'🤔 ¡Gracias por tu honestidad! Te recomiendo repasar las diapositivas de contenido antes de continuar.',D:'💪 ¡Qué actitud tan admirable! La curiosidad científica es el mejor camino al conocimiento.'};
+function doMeta(card,k){document.querySelectorAll('.meta-card').forEach(c=>c.classList.remove('sel'));card.classList.add('sel');const c=document.getElementById('mconf');c.textContent=metaT[k];c.classList.add('show');}
+</script>
+</body>
+</html>
